@@ -28,7 +28,11 @@
 #include <ctype.h>
 #include <string.h>
 #include <io.h>
+#ifdef __WATCOMC__
+#include <direct.h>
+#else
 #include <dir.h>
+#endif
 #include <dos.h>
 #include <sys/stat.h>
 
@@ -49,6 +53,50 @@ char **__crt0_glob_function (char *arg) {
 
 /* directory separator is the UNIX-slash */
 #define DIR_SEPARATOR "/"
+
+#elif defined(__WATCOMC__)
+
+/* Open Watcom: map the Borland <dir.h>/<dos.h> functions used below. */
+#include <conio.h>
+
+#define DIR_SEPARATOR "\\"
+#define MAXPATH 80
+
+#define ffblk find_t
+#define ff_name name
+#define ff_attrib attrib
+#define findfirst(path, blk, attrib) _dos_findfirst((path), (attrib), (blk))
+#define findnext(blk) _dos_findnext(blk)
+#define FA_RDONLY _A_RDONLY
+#define FA_HIDDEN _A_HIDDEN
+#define FA_SYSTEM _A_SYSTEM
+#define FA_DIREC  _A_SUBDIR
+#define FA_ARCH   _A_ARCH
+
+#define dfree diskfree_t
+#define df_avail avail_clusters
+#define df_sclus sectors_per_cluster
+#define df_bsec  bytes_per_sector
+#define getdfree(drive, table) _dos_getdiskfree((drive), (table))
+
+struct ftime { unsigned date, time; };
+#define getftime(handle, ft) _dos_getftime((handle), &(ft)->date, &(ft)->time)
+#define setftime(handle, ft) _dos_setftime((handle), (ft)->date, (ft)->time)
+
+/* Borland _chmod(path, 0) gets and _chmod(path, 1, attrib) sets the
+   attributes; both return the attributes or -1 on error. */
+#include <stdarg.h>
+static int watcom_chmod(const char *path, int func, ...) {
+  unsigned attrib;
+  va_list args;
+  if (func == 0)
+    return _dos_getfileattr(path, &attrib) ? -1 : (int) attrib;
+  va_start(args, func);
+  attrib = va_arg(args, int);
+  va_end(args);
+  return _dos_setfileattr(path, attrib) ? -1 : (int) attrib;
+}
+#define _chmod watcom_chmod
 
 #else
 
