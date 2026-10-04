@@ -1,0 +1,18 @@
+Begin3
+Title:          REPLACE
+Version:        1.2a
+Entered-Date:   2001-03-25
+Description:    Replaces files in a destination directory
+Summary:        Replaces files in the destination directory with files from the
+                source directory that have the same name.
+Keywords:       copy, replace
+Author:         Rene Ableidinger <rene.ableidinger -AT- gmx.at>
+Maintained-By:  Rene Ableidinger <rene.ableidinger -AT- gmx.at>
+Platforms:      DOS, FreeDOS
+Copying-Policy: GNU General Public License, Version 2
+Modified-Date:  2025-04-10.0
+Changes:        * NLS: English typo corrections and Swedish translation
+                update|* removed CI/CD for project|* Metadata updated for
+                modified-date and LFN requirements|* improved repository
+                INDEX.md
+End
